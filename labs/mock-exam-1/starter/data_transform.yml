@@ -1,0 +1,10 @@
+---
+- name: Transform mock employee data
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  vars_files:
+    - vars/employees.yml
+  tasks:
+    # TODO: write artifacts/transform-results.yml using the required filters.
+    []

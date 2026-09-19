@@ -1,0 +1,19 @@
+---
+employees:
+  - name: Alice
+    department: Engineering
+    salary: 95000
+    skills: [python, ansible, kubernetes]
+  - name: Bob
+    department: Operations
+    salary: 78000
+    skills: [ansible, terraform]
+  - name: Charlie
+    department: Engineering
+    salary: 110000
+    skills: [python, golang, docker]
+  - name: Diana
+    department: Operations
+    salary: 92000
+    skills: [ansible, python, aws]
+server_string: webserver-prod-us-east-01.example.com

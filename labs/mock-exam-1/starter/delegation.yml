@@ -1,0 +1,7 @@
+---
+- name: Build delegated webserver reports
+  hosts: webservers
+  gather_facts: true
+  tasks:
+    # TODO: create the delegated directory, per-host reports, and summary.
+    []
