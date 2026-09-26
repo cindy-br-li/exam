@@ -1,0 +1,12 @@
+---
+release:
+  version: 2.7.4
+  artifacts:
+    - name: bluefin-web
+      checksum: sha256:1111111111111111111111111111111111111111111111111111111111111111
+    - name: bluefin-assets
+      checksum: sha256:22222222222222222222222222222222
+release_manifest_yaml: |
+  application: bluefin
+  health_path: /healthz
+  expected_status: 200

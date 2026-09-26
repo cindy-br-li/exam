@@ -1,0 +1,17 @@
+---
+- name: Create the release manifest once
+  ansible.builtin.copy:
+    content: "Release {{ content_release_id }}\n"
+    dest: "{{ content_manifest_path }}"
+    owner: "{{ content_manifest_owner }}"
+    group: "{{ content_manifest_group }}"
+    mode: "{{ content_manifest_mode }}"
+    force: false
+
+- name: Render the human-readable release summary
+  ansible.builtin.template:
+    src: release-summary.j2
+    dest: "{{ content_manifest_path }}.summary"
+    owner: "{{ content_manifest_owner }}"
+    group: "{{ content_manifest_group }}"
+    mode: "{{ content_manifest_mode }}"

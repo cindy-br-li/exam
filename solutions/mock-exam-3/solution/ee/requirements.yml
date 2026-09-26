@@ -1,0 +1,8 @@
+---
+collections:
+  - name: northstar.content_supply
+    version: "1.0.0"
+  - name: ansible.posix
+    version: "2.0.0"
+  - name: community.general
+    version: "10.4.0"

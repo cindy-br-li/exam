@@ -1,0 +1,8 @@
+---
+- name: TODO - Implement the Bluefin staged rolling deployment
+  hosts: webservers
+  gather_facts: true
+  tasks:
+    - name: TODO - Replace this placeholder
+      ansible.builtin.debug:
+        msg: Candidate implementation required

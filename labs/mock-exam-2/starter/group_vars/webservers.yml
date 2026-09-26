@@ -1,0 +1,9 @@
+---
+# Preserve these desired packages; add variables needed by your solution.
+web_required_packages:
+  - httpd
+  - firewalld
+  - python3-libselinux
+web_preinstalled_packages:
+  - firewalld
+web_service_name: httpd

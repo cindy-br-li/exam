@@ -1,0 +1,15 @@
+---
+namespace: northstar
+name: content_supply
+version: 1.0.0
+readme: README.md
+authors:
+  - Northstar Automation Team
+description: Manage approved content release manifests and summaries.
+license:
+  - MIT
+tags:
+  - content
+  - release
+dependencies:
+  ansible.posix: ">=2.0.0"

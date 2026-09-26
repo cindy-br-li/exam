@@ -95,19 +95,22 @@ Complete `delegation.yml` targeting `webservers`. It must gather facts and:
 
 Run the playbook before grading.
 
-## Q5 — Collection filter (15 marks)
+## Q5 — Package a supplied role in a collection (15 marks)
 
-Complete `ansible_collections/exam/utilities/plugins/filter/format_utils.py`.
-The FQCN filter `exam.utilities.to_envvar` must:
-
-- convert `"app.db host-1"` to `APP_DB_HOST_1`;
-- convert `"3tier"` to `_3TIER`;
-- collapse runs of non-alphanumeric characters to one underscore;
-- raise `AnsibleFilterError` for a non-string input;
-- register through a `FilterModule` class.
-
-Complete the collection metadata with version `1.0.0` and
+The complete role `supplied_roles/system_report` is provided. Copy it to
+`ansible_collections/exam/utilities/roles/system_report` without rewriting its
+tasks. Complete the collection metadata with version `1.0.0` and
 `requires_ansible: ">=2.15.0"`.
+
+Complete `collection_test.yml` as a localhost play that uses the role by its
+FQCN, `exam.utilities.system_report`. Run the playbook and verify that it
+creates `/tmp/ex374-system-report.txt`, then build the collection:
+
+```bash
+ansible-playbook collection_test.yml
+ansible-galaxy collection build ansible_collections/exam/utilities \
+  --output-path artifacts
+```
 
 ## Q6 — Execution environment definition (10 marks)
 

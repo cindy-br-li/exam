@@ -1,0 +1,24 @@
+---
+argument_specs:
+  main:
+    short_description: Publish a Northstar release manifest and summary
+    options:
+      content_manifest_path:
+        type: path
+        required: true
+      content_release_id:
+        type: str
+        required: true
+      content_items:
+        type: list
+        elements: str
+        required: true
+      content_manifest_owner:
+        type: str
+        required: true
+      content_manifest_group:
+        type: str
+        required: true
+      content_manifest_mode:
+        type: str
+        required: true

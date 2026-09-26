@@ -1,0 +1,9 @@
+---
+collections:
+  - name: ansible.posix
+    version: "2.0.0"
+  - name: community.general
+    version: "10.4.0"
+  - name: northstar.approved_content
+    version: ">=1.0.0"
+    source: https://aap.lab.example.com/api/galaxy/content/published/

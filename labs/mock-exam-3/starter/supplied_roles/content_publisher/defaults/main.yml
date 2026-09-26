@@ -1,0 +1,9 @@
+---
+content_manifest_path: /var/lib/northstar/release-manifest.txt
+content_release_id: "2026.09"
+content_items:
+  - feature-film
+  - subtitles
+content_manifest_owner: root
+content_manifest_group: root
+content_manifest_mode: "0644"

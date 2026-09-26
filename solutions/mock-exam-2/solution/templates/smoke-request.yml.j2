@@ -1,0 +1,4 @@
+---
+url: "http://{{ hostvars[inventory_hostname].web_listen_address }}{{ release_manifest.health_path }}"
+expected_status: "{{ release_manifest.expected_status }}"
+release: "{{ release.version }}"

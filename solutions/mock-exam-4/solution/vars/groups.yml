@@ -1,0 +1,16 @@
+---
+managed_groups:
+  - developers
+  - operations
+
+managed_users:
+  - name: alice
+    groups:
+      - developers
+      - operations
+  - name: bob
+    groups:
+      - developers
+  - name: carol
+    groups:
+      - operations

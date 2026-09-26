@@ -1,0 +1,6 @@
+---
+- name: Test the collection role
+  hosts: localhost
+  gather_facts: false
+  roles:
+    - role: exam.utilities.system_report

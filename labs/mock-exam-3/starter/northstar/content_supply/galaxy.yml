@@ -1,0 +1,12 @@
+---
+namespace: TODO
+name: TODO
+version: 0.0.0
+readme: README.md
+authors:
+  - Candidate
+description: TODO
+license:
+  - MIT
+tags: []
+dependencies: {}

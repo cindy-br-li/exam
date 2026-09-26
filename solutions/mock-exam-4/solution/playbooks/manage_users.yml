@@ -1,0 +1,57 @@
+---
+- name: Manage branch office access
+  hosts: managed
+  gather_facts: false
+  vars_files:
+    - ../vars/groups.yml
+  vars:
+    account_records: >-
+      {{ query('ansible.builtin.lines',
+               'cat ' ~ playbook_dir ~ '/../files/users.txt') }}
+  tasks:
+    - name: Create managed groups
+      become: true
+      ansible.builtin.group:
+        name: "{{ item }}"
+        state: present
+      loop: "{{ managed_groups }}"
+      tags:
+        - groups
+
+    - name: Create managed users
+      become: true
+      no_log: true
+      ansible.builtin.user:
+        name: "{{ item.split('|')[0] }}"
+        comment: "{{ item.split('|')[1] }}"
+        password: >-
+          {{ lookup('ansible.builtin.password',
+                    '/tmp/mock4-' ~ item.split('|')[0] ~ ' length=20')
+             | password_hash('sha512') }}
+        state: present
+      loop: "{{ account_records }}"
+      tags:
+        - users
+
+    - name: Apply supplementary group membership
+      become: true
+      ansible.builtin.user:
+        name: "{{ item.0.name }}"
+        groups: "{{ item.1 }}"
+        append: true
+      loop: "{{ managed_users | subelements('groups') }}"
+      tags:
+        - groups
+        - users
+
+    - name: Install supplied public keys
+      become: true
+      ansible.posix.authorized_key:
+        user: "{{ item.name }}"
+        key: >-
+          {{ lookup('ansible.builtin.file',
+                    playbook_dir ~ '/../files/authorized_keys/' ~ item.name ~ '.pub') }}
+        state: present
+      loop: "{{ managed_users }}"
+      tags:
+        - keys

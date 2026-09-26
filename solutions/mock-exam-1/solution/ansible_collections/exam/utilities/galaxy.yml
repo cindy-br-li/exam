@@ -1,0 +1,14 @@
+---
+namespace: exam
+name: utilities
+version: 1.0.0
+readme: README.md
+authors:
+  - EX374 Candidate
+description: Mock exam utility collection
+license:
+  - GPL-2.0-or-later
+tags:
+  - exam
+  - utilities
+dependencies: {}

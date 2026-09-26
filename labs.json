@@ -4,12 +4,30 @@
     "source": "mock-exam-1",
     "grade": "automatic",
     "commands": ["ansible-playbook", "ansible-inventory", "ansible-builder"],
-    "dns": [
-      "servera.lab.example.com",
-      "serverb.lab.example.com",
-      "serverc.lab.example.com",
-      "serverd.lab.example.com"
-    ],
+    "dns": ["servera.lab.example.com", "serverb.lab.example.com", "serverc.lab.example.com", "serverd.lab.example.com"],
+    "images": ["aap.lab.example.com/ee-supported-rhel9:latest"]
+  },
+  {
+    "id": "mock-exam-2",
+    "source": "mock-exam-2",
+    "grade": "automatic",
+    "commands": ["ansible-playbook", "ansible-inventory", "ansible-navigator"],
+    "dns": ["servera.lab.example.com", "serverb.lab.example.com", "serverc.lab.example.com", "serverd.lab.example.com"],
+    "images": ["aap.lab.example.com/ee-supported-rhel9:latest"]
+  },
+  {
+    "id": "mock-exam-3",
+    "source": "mock-exam-3",
+    "grade": "automatic",
+    "commands": ["ansible-galaxy", "ansible-builder", "ansible-navigator"],
+    "images": ["aap.lab.example.com/ee-supported-rhel9:latest"]
+  },
+  {
+    "id": "mock-exam-4",
+    "source": "mock-exam-4",
+    "grade": "automatic",
+    "commands": ["ansible-playbook", "git"],
+    "optional_dns": ["aap.lab.example.com"],
     "images": ["aap.lab.example.com/ee-supported-rhel9:latest"]
   }
 ]

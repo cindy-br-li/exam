@@ -1,0 +1,8 @@
+---
+- name: Manage branch office access
+  hosts: managed
+  gather_facts: false
+  tasks:
+    - name: Implement required idempotent account management
+      ansible.builtin.debug:
+        msg: TODO

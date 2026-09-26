@@ -3,7 +3,6 @@
 
 from __future__ import annotations
 
-import importlib.util
 from pathlib import Path
 import sys
 
@@ -115,32 +114,24 @@ if reports_ok:
     reports_ok = "web1" in (report_dir / "web1.txt").read_text(errors="ignore") and "web2" in (report_dir / "web2.txt").read_text(errors="ignore")
 award("Q4 delegated reports exist on workstation", 7, reports_ok)
 
-filter_path = ROOT / "ansible_collections/exam/utilities/plugins/filter/format_utils.py"
-filter_ok = False
-registration_ok = False
-try:
-    spec = importlib.util.spec_from_file_location("mock_format_utils", filter_path)
-    module = importlib.util.module_from_spec(spec)
-    assert spec and spec.loader
-    spec.loader.exec_module(module)
-    filter_ok = module.to_envvar("app.db host-1") == "APP_DB_HOST_1" and module.to_envvar("3tier") == "_3TIER"
-    try:
-        module.to_envvar(123)
-    except Exception as error:  # The exact class is checked by its name to avoid coupling the grader.
-        filter_ok &= error.__class__.__name__ == "AnsibleFilterError"
-    else:
-        filter_ok = False
-    registration_ok = module.FilterModule().filters().get("to_envvar") is module.to_envvar
-except Exception:
-    pass
-award("Q5 to_envvar filter behavior", 8, filter_ok)
+role_tasks = load("ansible_collections/exam/utilities/roles/system_report/tasks/main.yml")
+role_ok = (
+    isinstance(role_tasks, list)
+    and any(
+        isinstance(task, dict)
+        and "ansible.builtin.copy" in task
+        and task["ansible.builtin.copy"].get("dest") == "/tmp/ex374-system-report.txt"
+        for task in role_tasks
+    )
+)
+consumer = read("collection_test.yml")
+award("Q5 supplied role migrated and consumed by FQCN", 8, role_ok and "exam.utilities.system_report" in consumer)
 galaxy = load("ansible_collections/exam/utilities/galaxy.yml")
 runtime = load("ansible_collections/exam/utilities/meta/runtime.yml")
 award(
-    "Q5 filter registration and collection metadata",
+    "Q5 collection metadata",
     7,
-    registration_ok
-    and galaxy.get("namespace") == "exam"
+    galaxy.get("namespace") == "exam"
     and galaxy.get("name") == "utilities"
     and str(galaxy.get("version")) == "1.0.0"
     and runtime.get("requires_ansible") == ">=2.15.0",

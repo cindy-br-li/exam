@@ -1,0 +1,128 @@
+---
+- name: Perform the Bluefin staged rolling deployment
+  hosts: webservers
+  gather_facts: true
+  become: true
+  serial:
+    - 1
+    - 100%
+  max_fail_percentage: 49
+  vars_files:
+    - vars/releases.yml
+
+  pre_tasks:
+    - name: Validate required host deployment metadata
+      ansible.builtin.assert:
+        that:
+          - deployment_slot is defined
+          - web_listen_address is defined
+        fail_msg: Missing deployment metadata for the current host
+      tags:
+        - validate
+
+  tasks:
+    - name: Deploy the current web node with traffic recovery
+      block:
+        - name: Disable the current node in the load balancer
+          ansible.builtin.uri:
+            url: "{{ load_balancer_api_base }}/backends/{{ inventory_hostname }}/disable"
+            method: POST
+            body_format: json
+            body:
+              backend_address: "{{ hostvars[inventory_hostname].web_listen_address }}"
+            status_code:
+              - 200
+              - 204
+          delegate_to: load_balancer
+          tags:
+            - deploy
+
+        - name: Prepare release and package data
+          ansible.builtin.set_fact:
+            release_channel: "{{ release.channel | default(release_channel_default) }}"
+            release_manifest: "{{ release_manifest_yaml | from_yaml }}"
+            artifact_names: "{{ release.artifacts | map(attribute='name') | list }}"
+            packages_to_install: >-
+              {{ web_required_packages | difference(web_preinstalled_packages) }}
+          tags:
+            - validate
+
+        - name: Install required packages in one transaction
+          ansible.builtin.dnf:
+            name: "{{ packages_to_install }}"
+            state: present
+          tags:
+            - packages
+
+        - name: Deploy the web configuration
+          ansible.builtin.template:
+            src: templates/web.conf.j2
+            dest: /etc/bluefin-web.conf
+            owner: "{{ web_config_owner | default(omit) }}"
+            mode: "0644"
+          notify:
+            - Apply web configuration
+          tags:
+            - deploy
+
+        - name: Apply notified service changes before validation
+          ansible.builtin.meta: flush_handlers
+
+        - name: Prepare structured smoke request data
+          ansible.builtin.set_fact:
+            smoke_request: >-
+              {{ lookup('template', 'templates/smoke-request.yml.j2') | from_yaml }}
+          tags:
+            - smoke
+
+        - name: Smoke-test the current node from the runner
+          ansible.builtin.uri:
+            url: "{{ smoke_request.url }}"
+            status_code: "{{ smoke_request.expected_status | int }}"
+          delegate_to: smoke_runner
+          tags:
+            - smoke
+
+      rescue:
+        - name: Expose the failed deployment
+          ansible.builtin.fail:
+            msg: "Deployment or validation failed for {{ inventory_hostname }}"
+
+      always:
+        - name: Enable the current node in the load balancer
+          ansible.builtin.uri:
+            url: "{{ load_balancer_api_base }}/backends/{{ inventory_hostname }}/enable"
+            method: POST
+            body_format: json
+            body:
+              backend_address: "{{ hostvars[inventory_hostname].web_listen_address }}"
+            status_code:
+              - 200
+              - 204
+          delegate_to: load_balancer
+          tags:
+            - deploy
+
+  post_tasks:
+    - name: Report completed batch without privilege escalation
+      block:
+        - name: Display the completed host and artifacts
+          ansible.builtin.debug:
+            msg: >-
+              {{ inventory_hostname }} deployed {{ artifact_names | join(', ') }}
+              from channel {{ release_channel }}
+      become: false
+
+  handlers:
+    - name: Restart the Bluefin web service
+      ansible.builtin.service:
+        name: "{{ web_service_name }}"
+        state: restarted
+        enabled: true
+      listen: Apply web configuration
+
+    - name: Reload firewall configuration
+      ansible.builtin.service:
+        name: firewalld
+        state: reloaded
+      listen: Apply web configuration

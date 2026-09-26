@@ -1,0 +1,10 @@
+---
+ansible-navigator:
+  mode: stdout
+  playbook-artifact:
+    enable: false
+  execution-environment:
+    enabled: true
+    image: aap.lab.example.com/ee-supported-rhel9:latest
+    pull:
+      policy: missing

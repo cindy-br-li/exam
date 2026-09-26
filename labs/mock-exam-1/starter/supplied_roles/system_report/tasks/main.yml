@@ -1,0 +1,8 @@
+---
+- name: Write the system report
+  ansible.builtin.copy:
+    content: |
+      host={{ inventory_hostname }}
+      managed_by=exam.utilities.system_report
+    dest: /tmp/ex374-system-report.txt
+    mode: "0644"

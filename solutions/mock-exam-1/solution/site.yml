@@ -1,0 +1,34 @@
+---
+- name: Configure portal web servers
+  hosts: webservers
+  become: true
+  gather_facts: false
+  tasks:
+    - name: Install web packages
+      ansible.builtin.dnf:
+        name: "{{ web_packages }}"
+        state: present
+      tags:
+        - packages
+
+    - name: Deploy portal page
+      ansible.builtin.template:
+        src: templates/index.html.j2
+        dest: /var/www/html/index.html
+        mode: "0644"
+      tags:
+        - deploy
+
+    - name: Start and enable the web service
+      ansible.builtin.service:
+        name: httpd
+        state: started
+        enabled: true
+      tags:
+        - service
+
+    - name: Report the configured endpoint
+      ansible.builtin.debug:
+        msg: "{{ inventory_hostname }} serves {{ app_name }} on port {{ http_port }}"
+      tags:
+        - always

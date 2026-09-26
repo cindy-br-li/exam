@@ -1,0 +1,39 @@
+---
+- name: Transform mock employee data
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  vars_files:
+    - vars/employees.yml
+  vars:
+    transform_results:
+      names: "{{ employees | map(attribute='name') | list }}"
+      engineering_names: >-
+        {{ employees
+           | selectattr('department', 'equalto', 'Engineering')
+           | map(attribute='name')
+           | list }}
+      total_salary: "{{ employees | map(attribute='salary') | sum }}"
+      python_users: >-
+        {{ employees
+           | selectattr('skills', 'contains', 'python')
+           | map(attribute='name')
+           | list }}
+      environment: >-
+        {{ server_string
+           | regex_search('-(dev|test|prod)-')
+           | regex_replace('-', '') }}
+      renamed_server: "{{ server_string | regex_replace('us-east', 'eu-west') }}"
+      backup_path: "{{ missing_backup_path | default('/tmp/backup') }}"
+  tasks:
+    - name: Ensure the artifact directory exists
+      ansible.builtin.file:
+        path: artifacts
+        state: directory
+        mode: "0755"
+
+    - name: Write transformed values
+      ansible.builtin.copy:
+        dest: artifacts/transform-results.yml
+        mode: "0644"
+        content: "{{ transform_results | to_nice_yaml(indent=2, sort_keys=false) }}"

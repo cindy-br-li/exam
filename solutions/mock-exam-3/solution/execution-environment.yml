@@ -1,0 +1,23 @@
+---
+version: 3
+
+images:
+  base_image:
+    name: aap.lab.example.com/ee-supported-rhel9:latest
+
+dependencies:
+  galaxy: ee/requirements.yml
+  python: ee/requirements.txt
+  system: ee/bindep.txt
+
+additional_build_files:
+  - src: files/corporate-ca.crt.example
+    dest: certs/
+
+additional_build_steps:
+  append_final:
+    - COPY _build/certs/corporate-ca.crt.example /etc/pki/ca-trust/source/anchors/corporate-ca.crt
+    - RUN update-ca-trust
+
+options:
+  package_manager_path: /usr/bin/dnf

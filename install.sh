@@ -6,8 +6,9 @@ install_dir="${HOME}/.local/share/ex374-lab"
 bin_dir="${HOME}/.local/bin"
 
 mkdir -p "$install_dir" "$bin_dir"
-rm -rf "$install_dir/labs"
+rm -rf "$install_dir/labs" "$install_dir/solutions"
 cp -a "$source_dir/labs" "$install_dir/labs"
+cp -a "$source_dir/solutions" "$install_dir/solutions"
 cp "$source_dir/labs.json" "$install_dir/labs.json"
 install -m 0755 "$source_dir/exlab.py" "$bin_dir/exlab"
 

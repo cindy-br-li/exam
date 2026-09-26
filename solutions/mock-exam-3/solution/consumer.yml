@@ -1,0 +1,7 @@
+---
+- name: Consume Northstar content supply collection
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  roles:
+    - role: northstar.content_supply.content_publisher

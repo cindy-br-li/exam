@@ -124,6 +124,16 @@ def cmd_start(args: argparse.Namespace) -> int:
     starter = source / "starter"
     if starter.is_dir():
         shutil.copytree(starter, work, dirs_exist_ok=True)
+    for path in work.rglob("*"):
+        if not path.is_file():
+            continue
+        try:
+            with path.open("rb") as stream:
+                has_shebang = stream.read(2) == b"#!"
+        except OSError:
+            continue
+        if has_shebang and os.name == "posix":
+            path.chmod(path.stat().st_mode | 0o111)
     shutil.copy2(source / "README.md", work / "TASK.md")
     metadata = work / ".exlab"
     metadata.mkdir()
@@ -285,6 +295,17 @@ def cmd_show(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_solution(args: argparse.Namespace) -> int:
+    entry, _ = resolve(args.exercise)
+    solution_root = ROOT / "solutions" / entry["id"]
+    guide = solution_root / "SOLUTION.md"
+    if not guide.is_file():
+        raise SystemExit(f"No sample solution is available for {entry['id']}.")
+    print(guide.read_text(encoding="utf-8-sig"))
+    print(f"\nSolution files: {solution_root / 'solution'}")
+    return 0
+
+
 def cmd_finish(args: argparse.Namespace) -> int:
     entry, work = resolve(args.exercise)
     result = cmd_grade(argparse.Namespace(exercise=entry["id"]))
@@ -313,7 +334,11 @@ def parser() -> argparse.ArgumentParser:
     reset.add_argument("exercise", nargs="?")
     reset.add_argument("--yes", action="store_true", help="reset without an interactive confirmation")
     reset.set_defaults(func=cmd_reset)
-    for name, function in (("grade", cmd_grade), ("show", cmd_show)):
+    for name, function in (
+        ("grade", cmd_grade),
+        ("show", cmd_show),
+        ("solution", cmd_solution),
+    ):
         command = commands.add_parser(name)
         command.add_argument("exercise", nargs="?")
         command.set_defaults(func=function)
@@ -328,6 +353,11 @@ def parser() -> argparse.ArgumentParser:
     return result
 
 
-if __name__ == "__main__":
+def main() -> int:
+    """Parse the command line and run the selected command."""
     arguments = parser().parse_args()
-    raise SystemExit(arguments.func(arguments))
+    return arguments.func(arguments)
+
+
+if __name__ == "__main__":
+    sys.exit(main())

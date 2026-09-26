@@ -1,0 +1,6 @@
+*.retry
+*.log
+ansible-navigator.log
+*-artifact-*.json
+.env
+.secrets.yml

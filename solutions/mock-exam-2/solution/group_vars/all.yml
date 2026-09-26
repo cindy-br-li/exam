@@ -1,0 +1,5 @@
+---
+platform_environment: staging
+ansible_user: devops
+ansible_port: 22
+release_channel_default: stable

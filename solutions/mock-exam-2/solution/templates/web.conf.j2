@@ -1,0 +1,9 @@
+# Managed by Ansible for {{ inventory_hostname }}
+application=bluefin
+environment={{ platform_environment }}
+slot={{ deployment_slot }}
+listen={{ web_listen_address | ansible.utils.ipaddr('address') }}
+distribution={{ ansible_facts.distribution }}
+{% for backend in groups['webservers'] %}
+backend={{ backend }}:{{ hostvars[backend].web_listen_address | ansible.utils.ipaddr('address') }}
+{% endfor %}

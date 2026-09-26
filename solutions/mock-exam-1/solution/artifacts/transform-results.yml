@@ -1,0 +1,16 @@
+names:
+  - Alice
+  - Bob
+  - Charlie
+  - Diana
+engineering_names:
+  - Alice
+  - Charlie
+total_salary: 375000
+python_users:
+  - Alice
+  - Charlie
+  - Diana
+environment: prod
+renamed_server: webserver-prod-eu-west-01.example.com
+backup_path: /tmp/backup

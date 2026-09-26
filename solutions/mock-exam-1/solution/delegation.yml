@@ -1,0 +1,31 @@
+---
+- name: Build delegated webserver reports
+  hosts: webservers
+  gather_facts: true
+  tasks:
+    - name: Create the report directory on the control node
+      ansible.builtin.file:
+        path: /tmp/mock-exam-reports
+        state: directory
+        mode: "0755"
+      delegate_to: localhost
+      run_once: true
+
+    - name: Write one report for each managed host
+      ansible.builtin.copy:
+        dest: "/tmp/mock-exam-reports/{{ inventory_hostname }}.txt"
+        mode: "0644"
+        content: |
+          inventory_hostname={{ inventory_hostname }}
+          default_ipv4={{ ansible_facts.default_ipv4.address }}
+          distribution={{ ansible_facts.distribution }}
+      delegate_to: localhost
+
+    - name: Write the webserver summary
+      ansible.builtin.copy:
+        dest: /tmp/mock-exam-reports/summary.txt
+        mode: "0644"
+        content: |
+          webservers={{ groups['webservers'] | join(',') }}
+      delegate_to: localhost
+      run_once: true
